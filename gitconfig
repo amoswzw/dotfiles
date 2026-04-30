@@ -1,0 +1,15 @@
+# Personal identity is intentionally NOT committed here.
+# After running `make install`, set your own identity with:
+#   git config --global user.name  "Your Name"
+#   git config --global user.email "you@example.com"
+#   git config --global user.signingkey <YOUR_GPG_KEY_ID>
+
+[commit]
+	gpgsign = true
+[gpg]
+	format = openpgp
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f

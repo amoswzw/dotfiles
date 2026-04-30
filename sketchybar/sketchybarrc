@@ -1,0 +1,152 @@
+#!/bin/bash
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+source "$CONFIG_DIR/colors.sh"
+
+########## Bar ##########
+sketchybar --bar \
+  height=38 \
+  blur_radius=20 \
+  position=top \
+  sticky=on \
+  padding_left=12 \
+  padding_right=12 \
+  color=$BAR_COLOR \
+  shadow=on \
+  display=main
+
+########## Defaults ##########
+sketchybar --default \
+  padding_left=4 \
+  padding_right=4 \
+  icon.font="Hack Nerd Font:Bold:15.0" \
+  label.font="SF Pro Text:Semibold:13.0" \
+  icon.color=$TEXT \
+  label.color=$TEXT \
+  icon.padding_left=4 \
+  icon.padding_right=4 \
+  label.padding_left=2 \
+  label.padding_right=6 \
+  background.drawing=off
+
+########## LEFT: Apple + Spaces + Front App ##########
+
+sketchybar --add item apple left \
+  --set apple \
+    icon="" \
+    icon.color=$MAUVE \
+    icon.font="Hack Nerd Font:Bold:18.0" \
+    icon.padding_left=10 \
+    icon.padding_right=10 \
+    icon.y_offset=-2 \
+    padding_left=0 \
+    padding_right=0 \
+    label.drawing=off \
+    click_script="open '/System/Applications/System Preferences.app' 2>/dev/null || open '/System/Applications/System Settings.app'"
+
+
+# Workspaces (yabai spaces 1–6)
+for i in $(seq 1 6); do
+  sketchybar --add item space.$i left \
+    --set space.$i \
+      icon="$i" \
+      icon.font="Hack Nerd Font Mono:Bold:11.0" \
+      icon.padding_left=7 \
+      icon.padding_right=7 \
+      label.drawing=off \
+      background.color=$SURFACE0 \
+      background.drawing=on \
+      background.height=22 \
+      background.corner_radius=6 \
+      padding_left=3 \
+      padding_right=3 \
+      click_script="yabai -m space --focus $i 2>/dev/null" \
+      script="$PLUGIN_DIR/spaces.sh" \
+    --subscribe space.$i space_change
+done
+
+
+sketchybar --add item front_app left \
+  --set front_app \
+    icon.drawing=off \
+    label.color=$LAVENDER \
+    label.font="SF Pro Text:Bold:13.0" \
+    padding_left=8 \
+    padding_right=4 \
+    script="$PLUGIN_DIR/app.sh" \
+  --subscribe front_app front_app_switched
+
+########## RIGHT (left→right): music | cpu | gpu | memory | clash | wifi | battery | clock ##########
+# Items added first appear rightmost in sketchybar right-aligned layout.
+
+sketchybar --add event music_change com.apple.Music.playerInfo
+
+# Clock (rightmost)
+sketchybar --add item clock right \
+  --set clock \
+    icon="󰥔" \
+    icon.color=$BLUE \
+    update_freq=10 \
+    padding_right=8 \
+    script="$PLUGIN_DIR/clock.sh"
+
+# Battery (right of WiFi)
+sketchybar --add item battery right \
+  --set battery \
+    icon="󰁹" \
+    icon.color=$GREEN \
+    update_freq=60 \
+    script="$PLUGIN_DIR/battery.sh"
+
+# WiFi
+sketchybar --add item wifi right \
+  --set wifi \
+    icon="󰤨" \
+    icon.color=$TEAL \
+    update_freq=30 \\
+    click_script="open 'x-apple.systempreferences:com.apple.preference.network'" \
+    script="$PLUGIN_DIR/wifi.sh"
+
+# Clash Verge proxy
+sketchybar --add item clash right \
+  --set clash \
+    icon="󱕻" \
+    icon.color=$LAVENDER \
+    update_freq=10 \
+    click_script="open '/Applications/Clash Verge.app'" \
+    script="$PLUGIN_DIR/clash.sh"
+
+# Memory
+sketchybar --add item memory right \
+  --set memory \
+    icon="󰍛" \
+    icon.color=$GREEN \
+    update_freq=30 \
+    script="$PLUGIN_DIR/memory.sh"
+
+# GPU
+sketchybar --add item gpu right \
+  --set gpu \
+    icon="󰾲" \
+    icon.color=$MAUVE \
+    update_freq=5 \
+    script="$PLUGIN_DIR/gpu.sh"
+
+# CPU
+sketchybar --add item cpu right \
+  --set cpu \
+    icon="󰘚" \
+    icon.color=$PEACH \
+    update_freq=5 \
+    script="$PLUGIN_DIR/cpu.sh"
+
+# Music (hidden when nothing plays)
+sketchybar --add item music right \
+  --set music \
+    icon="󰎆" \
+    icon.color=$PINK \
+    update_freq=10 \
+    script="$PLUGIN_DIR/music.sh" \
+  --subscribe music music_change
+
+sketchybar --update

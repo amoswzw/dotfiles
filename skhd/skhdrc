@@ -1,0 +1,27 @@
+alt - f : yabai -m window --toggle zoom-fullscreen
+cmd + ctrl + alt - m : yabai -m window --toggle native-fullscreen
+alt - h : yabai -m window --focus west
+alt - j : yabai -m window --focus south
+alt - k : yabai -m window --focus north
+alt - l : yabai -m window --focus east
+#shift + alt - h : yabai -m window --swap west
+#shift + alt - j : yabai -m window --swap south
+#shift + alt - k : yabai -m window --swap north
+#shift + alt - l : yabai -m window --swap east
+#command + alt + ctrl - h : yabai -m window --warp west
+#command + alt + ctrl - j : yabai -m window --warp south
+#command + alt + ctrl - k : yabai -m window --warp north
+#command + alt + ctrl - l : yabai -m window --warp east
+#alt - r : yabai -m space --rotate 90
+#alt - g : yabai -m space --toggle padding; yabai -m space --toggle gap
+#alt - t : yabai -m window --toggle float;\
+#          yabai -m window --grid 4:4:1:1:2:2
+#alt - e : yabai -m window --toggle split
+#shift + alt - 0 : yabai -m space --balance
+#alt - 0 : yabai -m space --focus recent
+cmd + ctrl + alt - n : /Users/amos/.config/yabai/move-window-next-display.sh
+#shift + alt - w : yabai -m window --resize top:0:-20
+#shift + alt - d : yabai -m window --resize left:-20:0
+#shift + alt - s : yabai -m window --resize bottom:0:-20
+#shift + alt - a : yabai -m window --resize top:0:20
+cmd - return : open -a fluxtty

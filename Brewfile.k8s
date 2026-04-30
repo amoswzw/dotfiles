@@ -1,0 +1,34 @@
+# Brewfile.k8s — Kubernetes / container ecosystem tooling.
+#
+# This file is NOT installed by `make bootstrap`. Install on demand with:
+#   brew bundle --file=Brewfile.k8s
+# Or check status without installing:
+#   brew bundle check --file=Brewfile.k8s
+#
+# `docker` and `colima` (container runtime on macOS) live in the main
+# Brewfile because they're part of the everyday environment.
+
+# --- Taps -------------------------------------------------------------------
+tap "buildpacks/tap"
+tap "derailed/k9s"
+
+# --- Core CLI ---------------------------------------------------------------
+brew "kubernetes-cli", link: false   # kubectl (link:false to avoid clashing with Docker Desktop's bundled kubectl)
+brew "helm"                          # k8s package manager
+brew "krew"                          # kubectl plugin manager
+brew "openshift-cli"                 # `oc` — OpenShift / OKD CLI
+
+# --- TUI / UX ---------------------------------------------------------------
+brew "derailed/k9s/k9s"               # k9s — terminal dashboard for k8s
+
+# --- Dev loop / CD ----------------------------------------------------------
+brew "skaffold"                      # build-deploy iteration loop for k8s
+brew "argocd"                        # GitOps continuous delivery CLI
+
+# --- Container images -------------------------------------------------------
+brew "skopeo"                        # inspect / copy / sign container images
+brew "buildpacks/tap/pack"           # Cloud Native Buildpacks CLI
+
+# --- Alternative runtimes / VM hosts ----------------------------------------
+brew "lima"                          # Linux VMs on macOS (nerdctl, k3s sandbox)
+brew "podman"                        # daemonless container engine

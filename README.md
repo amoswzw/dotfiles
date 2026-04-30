@@ -1,91 +1,91 @@
-# My dotfiles for macos
+# macOS dotfiles
 
-![Screen Shot](https://user-images.githubusercontent.com/16834522/80339982-5885fc00-8892-11ea-9212-6543c07ec7c2.png)
+## One-click install
 
-## Installation
+On a fresh macOS machine:
 
-### 1. Install HomeBrew
-
-```
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-```
-
-### 2.Clone this repo
-
-```
-git clone https://github.com/wangzewang/dotfiles.git ~/.dotfiles && cd ~/.dotfiles
+```bash
+git clone <your-fork-of-this-repo> ~/.dotfiles
+cd ~/.dotfiles
+make bootstrap
 ```
 
-### 3. Install software
+`make bootstrap` runs [`bootstrap.sh`](./bootstrap.sh) and takes care of the
+whole setup, idempotently:
 
-Please review the Brewfile, and remove things you don’t want or need.
+1. Install **Xcode Command Line Tools**
+2. Install **Homebrew**
+3. `brew bundle` against [`Brewfile`](./Brewfile) — every formula and cask
+4. Install **fzf** shell integration
+5. Clone **tmux plugin manager** (tpm) into `~/.tmux/plugins/tpm`
+6. Apply dotfiles from this repo to `$HOME` (see mapping below)
+7. `chsh` default shell to the brew-installed `zsh`
+8. Headlessly sync **Neovim plugins** via `lazy.nvim`
 
-```
-cd ~/.dotfiles && brew bundle
-```
+`zinit` (zsh plugin manager) auto-installs the first time `zshrc` is sourced,
+so nothing to do for that. After the bootstrap finishes:
 
-### 4. Zsh Config
+- Open a new shell.
+- Inside `tmux`, press `prefix + I` once to install tmux plugins.
 
-zsh shoud have been installed at step3. Just change default sh to zsh.
+## Optional bundles
 
-```
-chsh -s $(which zsh)
-```
+Some package groups are kept out of the main `Brewfile` because they're not
+part of the everyday environment. Install on demand:
 
-### 5. Fzf config
-
-fzf should have been installed at step3. Just add fuzzy auto-completion
-
-```
-$(brew --prefix)/opt/fzf/install
-```
-### 6. Tmux config
-
-tmux should have been installed at step3. Install tmux plugin manager.
-
-```
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```bash
+brew bundle --file=Brewfile.k8s        # kubectl, helm, k9s, argocd, skaffold, lima, podman, ...
+brew bundle --file=Brewfile.pentest    # nmap, sqlmap, hashcat, subfinder, amass, hydra, ...
 ```
 
-### 7. Apply dotfile config
+- [`Brewfile.k8s`](./Brewfile.k8s) — Kubernetes / container ecosystem.
+- [`Brewfile.pentest`](./Brewfile.pentest) — security / pentest / CTF.
 
-```
-cd ~/.dotfiles && make install
-```
+## Daily commands
 
-### 8. Nvim config
-
-neovim config should have been apply in step7, just open nvim with v or nvim or vim. And plugins installation should start automatically.
-
-```
-v
+```bash
+make backup    # Capture current $HOME config + Brewfile back into this repo
+make install   # Re-apply this repo's dotfiles to $HOME
+make help      # Show all targets
 ```
 
-### 9. Others
-config in iTerm2<br>
-![image](https://user-images.githubusercontent.com/16834522/80665402-fc0e2100-8acb-11ea-8689-0631b463a31f.png)
+`make backup` regenerates `Brewfile` via `brew bundle dump` and rsyncs every
+config listed in [`tools/dot_configs.sh`](./tools/dot_configs.sh) from `$HOME`
+back into the repo. Add new configs there as a `repo_path|home_path` entry —
+trailing slash on both sides means "directory" (rsynced with `--delete`),
+no slash means a single file.
 
-## Usage
+## What's tracked
 
-| short key | Description |
+| Repo path                     | Home path                          |
+| ----------------------------- | ---------------------------------- |
+| `aliases`                     | `~/.aliases`                       |
+| `functions`                   | `~/.functions`                     |
+| `zshrc`                       | `~/.zshrc`                         |
+| `zprofile`                    | `~/.zprofile`                      |
+| `zshenv`                      | `~/.zshenv`                        |
+| `gitconfig`                   | `~/.gitconfig`                     |
+| `tmux.conf`                   | `~/.tmux.conf`                     |
+| `nvim/`                       | `~/.config/nvim/`                  |
+| `alacritty/`                  | `~/.config/alacritty/`             |
+| `clash/start_clash.sh`        | `~/.config/clash/start_clash.sh`   |
+| `yabai/`                      | `~/.config/yabai/`                 |
+| `skhd/`                       | `~/.config/skhd/`                  |
+| `sketchybar/`                 | `~/.config/sketchybar/`            |
+
+## Key bindings
+
+| Short key | Description |
 | --- | ----------- |
-| ```dev``` | open a new tmux session.Automatic restore your last dev when exec |
-|```control + w + \|``` or ```control + w + ——``` | split the window |
-|```control + w ``` with ```h```,```j```,```k```,```l``` | change the pane size in tmux|
-|```control + w ``` with ```<```or ```>```| switch window in tmux|
-|```Escape``` then ```v``` then ```h```,```j```,```k```,```l``` then ```y``` | copy in tmux|
-|```control``` with ```h```,```j```,```k```,```l```| select pane in tmux or vim |
-|```tr```| nerdtree in vim|
-|```tb```| tagbar in vim|
-|```gd```| go to defination in vim| 
-|```control```+```p```| file search in vim|
-|```command```+```[```or ```]```| buffer switch in vim |
-|```command```+```/```| comment in vim|
-|etc||
-
-
-
-
-
-
-
+| `dev` | Open a new tmux session; auto-restores last dev when re-run |
+| `Ctrl-w \|` or `Ctrl-w —` | Split tmux window |
+| `Ctrl-w` + `h/j/k/l` | Resize tmux pane |
+| `Ctrl-w` + `<` or `>` | Switch tmux window |
+| `Esc` then `v` then `h/j/k/l` then `y` | Copy in tmux |
+| `Ctrl` + `h/j/k/l` | Navigate panes in tmux/vim |
+| `tr` | NERDTree in vim |
+| `tb` | Tagbar in vim |
+| `gd` | Go to definition in vim |
+| `Ctrl-p` | File search in vim |
+| `Cmd-[` / `Cmd-]` | Buffer switch in vim |
+| `Cmd-/` | Toggle comment in vim |

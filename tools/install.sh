@@ -3,45 +3,42 @@
 cd "$(dirname "$0")/.."
 DOTFILES_ROOT=$(pwd -P)
 
-source $DOTFILES_ROOT/tools/dot_configs.sh
-
-echo "$DOTFILES_ROOT"
+source "$DOTFILES_ROOT/tools/dot_configs.sh"
 
 set -e
 
-info () {
-  printf "\r  [ \033[00;34minfo\033[0m ] $1\n"
-}
+info ()    { printf "\r  [ \033[00;34minfo\033[0m ] %s\n" "$1"; }
+success () { printf "\r\033[2K  [ \033[00;32m OK \033[0m ] %s\n" "$1"; }
+fail ()    { printf "\r\033[2K  [\033[0;31mFAIL\033[0m] %s\n" "$1"; exit 1; }
 
-user () {
-  printf "\r  [ \033[0;33m??\033[0m ] $1\n"
-}
+RSYNC_EXCLUDES=(
+  --exclude='.DS_Store'
+  --exclude='*.swp'
+  --exclude='*.bak'
+  --exclude='*.tmp'
+  --exclude='.claude/'
+)
 
-success() {
-  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
-}
-
-fail () {
-  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
-  echo ''
-  exit
+sync_path () {
+  local src=$1 dst=$2
+  if [[ "$src" == */ ]]; then
+    mkdir -p "$dst"
+    rsync -a --delete "${RSYNC_EXCLUDES[@]}" "$src" "$dst"
+  else
+    mkdir -p "$(dirname "$dst")"
+    cp -f "$src" "$dst"
+  fi
 }
 
 install_dotfiles () {
-  info 'Installing dotfiles begin'
-  for key in ${!mapping[@]}
-  do
-      info "-------------------------------"
-      info "Copy $key to ${mapping[${key}]}"
-      # make sure dir exists
-      mkdir -p $(dirname ${mapping[${key}]})
-      cp $DOTFILES_ROOT/$key ${mapping[${key}]}
+  info "Installing dotfiles from $DOTFILES_ROOT"
+  for entry in "${mapping[@]}"; do
+    key="${entry%%|*}"
+    dst="${entry#*|}"
+    info "Apply $key -> $dst"
+    sync_path "$DOTFILES_ROOT/$key" "$dst"
   done
-  info "-------------------------------"
-  info "Installing dotfiles finished"
-  info "-------------------------------"
-
-  success "Install complate!"
+  success "Dotfiles installed."
 }
 
 install_dotfiles

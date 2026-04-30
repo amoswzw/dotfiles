@@ -1,0 +1,425 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# macOS Tahoe 26.x settings
+# Updated: 2026-04-30
+
+if [[ "$(sw_vers -productVersion | cut -d. -f1)" != "26" ]]; then
+  echo "This script is intended for macOS Tahoe 26.x only."
+  exit 1
+fi
+
+# Close System Settings before applying preference changes.
+osascript -e 'tell application "System Settings" to quit'
+
+# Request administrator privileges.
+sudo -v
+
+# Keep the sudo timestamp alive while the script runs.
+while true; do
+  sudo -n true
+  sleep 60
+  kill -0 "$$" || exit
+done 2>/dev/null &
+
+###############################################################################
+# Current machine settings
+###############################################################################
+
+# Enable dark mode.
+osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'
+
+# Set the accent color to pink.
+defaults write NSGlobalDomain AppleAccentColor -int 6
+
+# Set the highlight color to pink.
+defaults write NSGlobalDomain AppleHighlightColor -string "1.000000 0.749020 0.823529 Pink"
+
+# Enable reduced transparency.
+defaults write com.apple.universalaccess reduceTransparency -bool true
+
+# Enable reduced motion.
+defaults write com.apple.universalaccess reduceMotion -bool true
+
+# Set full keyboard access to 2.
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 2
+
+# Set key repeat to 2.
+defaults write NSGlobalDomain KeyRepeat -int 2
+
+# Set initial key repeat to 15.
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
+
+# Set preferred languages to en-US, then zh-Hans-US.
+defaults write NSGlobalDomain AppleLanguages -array "en-US" "zh-Hans-US"
+
+# Set the locale to en_US.
+defaults write NSGlobalDomain AppleLocale -string "en_US"
+
+# Set the timezone to Asia/Shanghai.
+sudo systemsetup -settimezone "Asia/Shanghai" > /dev/null
+
+# Set display sleep to 2 minutes on battery.
+sudo pmset -b displaysleep 2
+
+# Set display sleep to 10 minutes on AC power.
+sudo pmset -c displaysleep 10
+
+# Set system sleep to 1 minute on battery.
+sudo pmset -b sleep 1
+
+# Set system sleep to 1 minute on AC power.
+sudo pmset -c sleep 1
+
+# Enable standby mode.
+sudo pmset -a standby 1
+
+# Enable Power Nap.
+sudo pmset -a powernap 1
+
+# Disable Wake for network access on battery.
+sudo pmset -b womp 0
+
+# Enable Wake for network access on AC power.
+sudo pmset -c womp 1
+
+# Enable TCP keepalive during sleep.
+sudo pmset -a tcpkeepalive 1
+
+# Enable tap to click.
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+
+# Enable tap behavior for the current host.
+defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
+# Enable secondary click.
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
+
+# Set secondary click corner behavior to 0.
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 0
+
+# Enable current-host secondary click support.
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
+
+# Enable scroll-wheel zoom toggle.
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+
+# Set Control as the zoom modifier.
+defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
+
+# Open new Finder windows to Recents.
+defaults write com.apple.finder NewWindowTarget -string "PfAF"
+
+# Show external drives on the desktop.
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+
+# Hide internal drives on the desktop.
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
+
+# Show removable media on the desktop.
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+
+# Use icon view in Finder by default.
+defaults write com.apple.finder FXPreferredViewStyle -string "icnv"
+
+# Set the Dock icon size to 67.
+defaults write com.apple.dock tilesize -int 67
+
+# Enable Dock auto-hide.
+defaults write com.apple.dock autohide -bool true
+
+# Disable Dock launch animations.
+defaults write com.apple.dock launchanim -bool false
+
+# Disable automatic Space reordering.
+defaults write com.apple.dock mru-spaces -bool false
+
+# Hide recent apps in the Dock.
+defaults write com.apple.dock show-recents -bool false
+
+# Set the top-left hot corner to Application Windows.
+defaults write com.apple.dock wvous-tl-corner -int 3
+defaults write com.apple.dock wvous-tl-modifier -int 0
+
+# Set the top-right hot corner to Desktop.
+defaults write com.apple.dock wvous-tr-corner -int 4
+defaults write com.apple.dock wvous-tr-modifier -int 0
+
+# Set the bottom-left hot corner to Lock Screen.
+defaults write com.apple.dock wvous-bl-corner -int 13
+defaults write com.apple.dock wvous-bl-modifier -int 0
+
+# Set the bottom-right hot corner to Mission Control.
+defaults write com.apple.dock wvous-br-corner -int 2
+defaults write com.apple.dock wvous-br-modifier -int 0
+
+# Open Activity Monitor to the main window.
+defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
+
+# Set Activity Monitor category to 102.
+defaults write com.apple.ActivityMonitor ShowCategory -int 102
+
+###############################################################################
+# Optional settings
+###############################################################################
+
+# Disable automatic capitalization (current: enabled).
+# defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Disable automatic period substitution (current: enabled).
+# defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+
+# Disable smart dash substitution.
+# defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Disable smart quote substitution.
+# defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Disable automatic spelling correction.
+# defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# Set full keyboard access to 3 (current: 2).
+# defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
+# Prefer key repeat over the accent popup.
+# defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+# Set key repeat to 1 (current: 2).
+# defaults write NSGlobalDomain KeyRepeat -int 1
+
+# Set initial key repeat to 10 (current: 15).
+# defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+# Disable natural scrolling.
+# defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
+
+# Set secondary click to bottom-right corner (current: 0).
+# defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2
+
+# Set current-host trackpad corner click behavior to 1.
+# defaults -currentHost write NSGlobalDomain com.apple.trackpad.trackpadCornerClickBehavior -int 1
+
+# Set the highlight color to green (current: pink).
+# defaults write NSGlobalDomain AppleHighlightColor -string "0.764700 0.976500 0.568600"
+
+# Always show scroll bars.
+# defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+
+# Disable the animated focus ring.
+# defaults write NSGlobalDomain NSUseAnimatedFocusRing -bool false
+
+# Remove toolbar title rollover delay.
+# defaults write NSGlobalDomain NSToolbarTitleViewRolloverDelay -float 0
+
+# Speed up Cocoa window resize animations.
+# defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# Expand save panels by default.
+# defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+# defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+# Expand print panels by default.
+# defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
+# Save new documents to disk instead of iCloud.
+# defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Show ASCII control characters in standard text views.
+# defaults write NSGlobalDomain NSTextShowsControlCharacters -bool true
+
+# Show all file extensions.
+# defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Allow quitting Finder with Command-Q.
+# defaults write com.apple.finder QuitMenuItem -bool true
+
+# Disable Finder animations.
+# defaults write com.apple.finder DisableAllAnimations -bool true
+
+# Open new Finder windows to Desktop instead of Recents.
+# defaults write com.apple.finder NewWindowTarget -string "PfDe"
+# defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/Desktop/"
+
+# Show mounted servers on the desktop.
+# defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
+
+# Show the Finder status bar.
+# defaults write com.apple.finder ShowStatusBar -bool true
+
+# Show the Finder path bar.
+# defaults write com.apple.finder ShowPathbar -bool true
+
+# Show the full POSIX path in Finder window titles.
+# defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+
+# Keep folders on top when sorting by name.
+# defaults write com.apple.finder _FXSortFoldersFirst -bool true
+
+# Search the current folder by default.
+# defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+
+# Disable the file-extension change warning.
+# defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+# Use list view in Finder by default (current: icon view).
+# defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+
+# Disable the empty Trash warning.
+# defaults write com.apple.finder WarnOnEmptyTrash -bool false
+
+# Show item info on desktop icons.
+# /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
+
+# Put desktop icon labels on the right.
+# /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:labelOnBottom false" ~/Library/Preferences/com.apple.finder.plist
+
+# Snap desktop icons to a grid.
+# /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
+
+# Increase desktop icon grid spacing to 100.
+# /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 100" ~/Library/Preferences/com.apple.finder.plist
+
+# Set desktop icon size to 80.
+# /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
+
+# Show the ~/Library folder.
+# chflags nohidden ~/Library
+
+# Show the /Volumes folder.
+# sudo chflags nohidden /Volumes
+
+# Set the Dock icon size to 36 (current: 67).
+# defaults write com.apple.dock tilesize -int 36
+
+# Use the scale minimize effect.
+# defaults write com.apple.dock mineffect -string "scale"
+
+# Minimize windows into their application icon.
+# defaults write com.apple.dock minimize-to-application -bool true
+
+# Enable spring-loading for all Dock items.
+# defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
+
+# Show hidden apps as translucent in the Dock.
+# defaults write com.apple.dock showhidden -bool true
+
+# Remove the Dock auto-hide delay.
+# defaults write com.apple.dock autohide-delay -float 0
+
+# Remove the Dock auto-hide animation duration.
+# defaults write com.apple.dock autohide-time-modifier -float 0
+
+# Speed up Mission Control animations.
+# defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Do not group windows by app in Mission Control.
+# defaults write com.apple.dock expose-group-by-app -bool false
+
+# Set the top-left hot corner to Mission Control (current: Application Windows).
+# defaults write com.apple.dock wvous-tl-corner -int 2
+# defaults write com.apple.dock wvous-tl-modifier -int 0
+
+# Set the bottom-left hot corner to Start Screen Saver (current: Lock Screen).
+# defaults write com.apple.dock wvous-bl-corner -int 5
+# defaults write com.apple.dock wvous-bl-modifier -int 0
+
+# Require a password immediately after display sleep or screen saver start.
+# defaults write com.apple.screensaver askForPassword -int 1
+# defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+# Save screenshots to Desktop.
+# defaults write com.apple.screencapture location -string "${HOME}/Desktop"
+
+# Save screenshots as PNG.
+# defaults write com.apple.screencapture type -string "png"
+
+# Disable screenshot shadows.
+# defaults write com.apple.screencapture disable-shadow -bool true
+
+# Automatically check for macOS updates.
+# defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
+
+# Check for updates daily.
+# defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
+
+# Download updates automatically in the background.
+# defaults write com.apple.SoftwareUpdate AutomaticDownload -int 1
+
+# Automatically install critical updates.
+# defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -int 1
+
+# Automatically install system data files.
+# defaults write com.apple.SoftwareUpdate ConfigDataInstall -int 1
+
+# Automatically update App Store apps.
+# defaults write com.apple.commerce AutoUpdate -bool true
+
+# Allow automatic restart when a macOS update requires it.
+# defaults write com.apple.commerce AutoUpdateRestartRequired -bool true
+
+# Use plain text for new TextEdit documents.
+# defaults write com.apple.TextEdit RichText -int 0
+
+# Use UTF-8 when opening plain-text documents in TextEdit.
+# defaults write com.apple.TextEdit PlainTextEncoding -int 4
+
+# Use UTF-8 when saving plain-text documents in TextEdit.
+# defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
+
+# Auto-play videos when opened in QuickTime Player.
+# defaults write com.apple.QuickTimePlayerX MGPlayMovieOnOpen -bool true
+
+# Prevent auto-open when devices are plugged in.
+# defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
+
+# Do not prompt to use new disks for Time Machine backup.
+# defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+
+# Quit the print queue app when jobs complete.
+# defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
+
+# Disable Safari search suggestions.
+# defaults write com.apple.Safari UniversalSearchEnabled -bool false
+# defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+
+# Show full URLs in Safari.
+# defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Use a blank Safari home page.
+# defaults write com.apple.Safari HomePage -string "about:blank"
+
+# Do not auto-open safe downloads in Safari.
+# defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
+
+# Enable the Safari Develop menu.
+# defaults write com.apple.Safari IncludeDevelopMenu -bool true
+
+# Enable Safari Web Inspector.
+# defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+
+# Enable WebKit developer extras globally.
+# defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
+
+# Warn about fraudulent websites in Safari.
+# defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+
+# Keep Safari extensions updated automatically.
+# defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
+
+# Disable accidental back-swipe navigation in Chrome.
+# defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
+
+# Disable accidental mouse-swipe navigation in Chrome.
+# defaults write com.google.Chrome AppleEnableMouseSwipeNavigateWithScrolls -bool false
+
+# Use the system print dialog in Chrome.
+# defaults write com.google.Chrome DisablePrintPreview -bool true
+
+# Expand the Chrome print dialog by default.
+# defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
+
+# Reload affected processes after applying settings.
+killall Dock Finder SystemUIServer cfprefsd >/dev/null 2>&1 || true
+
+echo "macOS Tahoe settings applied."

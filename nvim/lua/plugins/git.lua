@@ -1,45 +1,51 @@
--- =============================================================================
--- Git Plugins
---   vim-fugitive (kept as-is — still the gold standard)
---   gitsigns.nvim (modern gutter signs + hunk navigation)
---   vim-dispatch (async build / test runner)
--- =============================================================================
-
 return {
-
-  -- ── Fugitive ─────────────────────────────────────────────────────────────────
-  -- Replaces: tpope/vim-fugitive (kept — no better alternative exists)
-  { "tpope/vim-fugitive", cmd = { "Git", "G", "Gdiffsplit", "Gblame" } },
-
-  -- ── Git signs in gutter ──────────────────────────────────────────────────────
-  -- Added: shows changed/added/removed lines; hunk staging, blame line
   {
-    "lewis6991/gitsigns.nvim",
-    event  = { "BufReadPost", "BufNewFile" },
-    config = function()
-      require("gitsigns").setup({
-        signs = {
-          add          = { text = "+" },
-          change       = { text = "~" },
-          delete       = { text = "_" },
-          topdelete    = { text = "‾" },
-          changedelete = { text = "~" },
-        },
-        on_attach = function(bufnr)
-          local gs   = package.loaded.gitsigns
-          local opts = { buffer = bufnr }
-          vim.keymap.set("n", "]h", gs.next_hunk,   vim.tbl_extend("force", opts, { desc = "Next hunk" }))
-          vim.keymap.set("n", "[h", gs.prev_hunk,   vim.tbl_extend("force", opts, { desc = "Prev hunk" }))
-          vim.keymap.set("n", "<leader>hs", gs.stage_hunk,   vim.tbl_extend("force", opts, { desc = "Stage hunk" }))
-          vim.keymap.set("n", "<leader>hr", gs.reset_hunk,   vim.tbl_extend("force", opts, { desc = "Reset hunk" }))
-          vim.keymap.set("n", "<leader>hb", gs.blame_line,   vim.tbl_extend("force", opts, { desc = "Blame line" }))
-        end,
-      })
+    "tpope/vim-fugitive",
+    cmd = { "Git", "G", "Gdiffsplit" },
+  },
+
+  {
+    "kdheepak/lazygit.nvim",
+    cmd = {
+      "LazyGit",
+      "LazyGitConfig",
+      "LazyGitCurrentFile",
+      "LazyGitFilter",
+      "LazyGitFilterCurrentFile",
+    },
+    keys = {
+      { "<leader>gg", "<cmd>LazyGit<CR>", silent = true, desc = "LazyGit" },
+      { "<leader>gf", "<cmd>LazyGitCurrentFile<CR>", silent = true, desc = "LazyGit Current File" },
+      { "<leader>gh", "<cmd>LazyGitFilterCurrentFile<CR>", silent = true, desc = "LazyGit File History" },
+      { "<leader>gH", "<cmd>LazyGitFilter<CR>", silent = true, desc = "LazyGit Repo History" },
+    },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    init = function()
+      vim.g.lazygit_floating_window_scaling_factor = 0.9
+      vim.g.lazygit_floating_window_border_chars = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" }
+      vim.g.lazygit_floating_window_use_plenary = 1
+      vim.g.lazygit_use_neovim_remote = 1
     end,
   },
 
-  -- ── Async dispatch ───────────────────────────────────────────────────────────
-  -- Replaces: tpope/vim-dispatch (kept — used by ack.vim & general async tasks)
-  { "tpope/vim-dispatch", cmd = { "Dispatch", "Make", "Start" } },
+  {
+    "tpope/vim-dispatch",
+    cmd = { "Dispatch", "Make", "Start" },
+  },
 
+  {
+    "lewis6991/gitsigns.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {
+      signs = {
+        add = { text = "+" },
+        change = { text = "~" },
+        delete = { text = "_" },
+        topdelete = { text = "‾" },
+        changedelete = { text = "~" },
+      },
+    },
+  },
 }
